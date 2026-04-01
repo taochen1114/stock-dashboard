@@ -1,0 +1,295 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  background: #0d1117;
+  color: #e6edf3;
+  min-height: 100vh;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+}
+
+header h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+#last-updated {
+  font-size: 0.8rem;
+  color: #8b949e;
+}
+
+/* 分析報告 */
+.report-section {
+  margin: 20px 24px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #30363d;
+  background: #1c2128;
+}
+
+.report-header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+#refresh-report-btn {
+  background: #21262d;
+  color: #c9d1d9;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+#refresh-report-btn:hover {
+  background: #30363d;
+}
+
+.report-body {
+  padding: 16px;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  color: #c9d1d9;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* 主區域 */
+.main-section {
+  display: flex;
+  gap: 16px;
+  margin: 0 24px 20px;
+  height: 520px;
+}
+
+/* 股票列表 */
+.stock-panel {
+  width: 340px;
+  flex-shrink: 0;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid #30363d;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px;
+  background: none;
+  border: none;
+  color: #8b949e;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.tab.active {
+  color: #58a6ff;
+  border-bottom: 2px solid #58a6ff;
+  background: #1c2128;
+}
+
+.stock-list {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.stock-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid #21262d;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.stock-item:hover {
+  background: #1c2128;
+}
+
+.stock-item.selected {
+  background: #1c2128;
+  border-left: 3px solid #58a6ff;
+}
+
+.stock-info .name {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.stock-info .symbol {
+  font-size: 0.75rem;
+  color: #8b949e;
+  margin-top: 2px;
+}
+
+.stock-price {
+  text-align: right;
+}
+
+.stock-price .price {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.stock-price .change {
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+.up { color: #3fb950; }
+.down { color: #f85149; }
+.flat { color: #8b949e; }
+
+/* 圖表區 */
+.chart-panel {
+  flex: 1;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #30363d;
+  background: #1c2128;
+  flex-shrink: 0;
+}
+
+#chart-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.period-bar {
+  display: flex;
+  gap: 4px;
+}
+
+.period-btn {
+  background: #21262d;
+  color: #8b949e;
+  border: 1px solid #30363d;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: inherit;
+}
+
+.period-btn:hover {
+  background: #30363d;
+  color: #c9d1d9;
+}
+
+.period-btn.active {
+  background: #388bfd26;
+  color: #58a6ff;
+  border-color: #388bfd;
+}
+
+#chart-container {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  height: 100%;
+}
+
+.chart-placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b949e;
+  font-size: 0.95rem;
+}
+
+/* 新聞 */
+.news-section {
+  margin: 0 24px 24px;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.news-section h2 {
+  padding: 12px 16px;
+  border-bottom: 1px solid #30363d;
+  font-size: 1rem;
+  font-weight: 600;
+  background: #1c2128;
+}
+
+.news-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1px;
+  background: #21262d;
+}
+
+.news-item {
+  background: #161b22;
+  padding: 12px 16px;
+}
+
+.news-item a {
+  color: #c9d1d9;
+  text-decoration: none;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  display: block;
+}
+
+.news-item a:hover {
+  color: #58a6ff;
+}
+
+.news-meta {
+  font-size: 0.75rem;
+  color: #8b949e;
+  margin-top: 4px;
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #161b22; }
+::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #484f58; }
