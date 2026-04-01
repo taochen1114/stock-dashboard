@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from contextlib import asynccontextmanager
 from database import init_db
-from routers import stocks, analysis, news
+from routers import stocks, analysis, news, cron
 from scheduler import start_scheduler
 
 
@@ -25,6 +25,7 @@ app = FastAPI(
 app.include_router(stocks.router)
 app.include_router(analysis.router)
 app.include_router(news.router)
+app.include_router(cron.router)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 

@@ -5,6 +5,7 @@ load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+REFRESH_API_KEY = os.getenv("REFRESH_API_KEY", "")
 
 # 美股追蹤清單
 US_STOCKS = {

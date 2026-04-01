@@ -1,0 +1,63 @@
+name: Daily Stock Update
+
+on:
+  schedule:
+    # 台股開盤前暖機 (09:00 台灣時間 = 01:00 UTC)
+    - cron: '0 1 * * 1-5'
+    # 台股收盤後生成報告 (14:00 台灣時間 = 06:00 UTC)
+    - cron: '0 6 * * 1-5'
+    # 美股收盤後生成報告 (05:30 台灣時間隔天 = 21:30 UTC)
+    - cron: '30 21 * * 1-5'
+  workflow_dispatch:  # 允許手動觸發
+
+jobs:
+  warmup:
+    name: Warmup & Cache
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 1 * * 1-5' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Wake up Render & warmup stock cache
+        run: |
+          echo "喚醒 Render 伺服器並預熱快取..."
+          curl -s --max-time 60 "${{ secrets.RENDER_APP_URL }}/health"
+          sleep 5
+          curl -s --max-time 120 \
+            -X POST \
+            -H "x-api-key: ${{ secrets.REFRESH_API_KEY }}" \
+            "${{ secrets.RENDER_APP_URL }}/api/cron/warmup" | jq .
+
+  tw-market-close-report:
+    name: Taiwan Market Close Report
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 6 * * 1-5' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Wake up Render
+        run: |
+          curl -s --max-time 60 "${{ secrets.RENDER_APP_URL }}/health"
+          sleep 5
+
+      - name: Generate daily report (after Taiwan close)
+        run: |
+          echo "台股收盤後生成分析報告..."
+          curl -s --max-time 120 \
+            -X POST \
+            -H "x-api-key: ${{ secrets.REFRESH_API_KEY }}" \
+            "${{ secrets.RENDER_APP_URL }}/api/cron/daily-report" | jq .
+
+  us-market-close-report:
+    name: US Market Close Report
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '30 21 * * 1-5' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Wake up Render
+        run: |
+          curl -s --max-time 60 "${{ secrets.RENDER_APP_URL }}/health"
+          sleep 5
+
+      - name: Refresh report (after US close)
+        run: |
+          echo "美股收盤後更新分析報告..."
+          curl -s --max-time 120 \
+            -X POST \
+            -H "x-api-key: ${{ secrets.REFRESH_API_KEY }}" \
+            "${{ secrets.RENDER_APP_URL }}/api/cron/daily-report" | jq .
