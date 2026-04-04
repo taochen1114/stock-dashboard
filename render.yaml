@@ -9,7 +9,7 @@ services:
         sync: false
       - key: OPENAI_MODEL
         value: gpt-4o-mini
-    disk:
-      name: stock-data
-      mountPath: /opt/render/project/src
-      sizeGB: 1
+      - key: DATABASE_URL
+        sync: false
+      - key: REFRESH_API_KEY
+        sync: false
