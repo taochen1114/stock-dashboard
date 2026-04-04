@@ -8,7 +8,7 @@ on:
     - cron: '0 6 * * 1-5'
     # 美股收盤後生成報告 (05:30 台灣時間隔天 = 21:30 UTC)
     - cron: '30 21 * * 1-5'
-  workflow_dispatch:  # 允許手動觸發
+  workflow_dispatch:
 
 jobs:
   warmup:
@@ -16,12 +16,24 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.schedule == '0 1 * * 1-5' || github.event_name == 'workflow_dispatch'
     steps:
-      - name: Wake up Render & warmup stock cache
+      - name: Wake up Render (retry until alive)
         run: |
-          echo "喚醒 Render 伺服器並預熱快取..."
-          curl -s --max-time 60 "${{ secrets.RENDER_APP_URL }}/health"
-          sleep 5
-          curl -s --max-time 120 \
+          echo "喚醒 Render 伺服器..."
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "${{ secrets.RENDER_APP_URL }}/health" || echo "000")
+            echo "嘗試 $i：HTTP $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "伺服器已就緒"
+              break
+            fi
+            echo "等待 20 秒後重試..."
+            sleep 20
+          done
+
+      - name: Warmup stock cache
+        run: |
+          echo "預熱股票快取..."
+          curl -s --max-time 180 \
             -X POST \
             -H "x-api-key: ${{ secrets.REFRESH_API_KEY }}" \
             "${{ secrets.RENDER_APP_URL }}/api/cron/warmup" | jq .
@@ -31,15 +43,24 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.schedule == '0 6 * * 1-5' || github.event_name == 'workflow_dispatch'
     steps:
-      - name: Wake up Render
+      - name: Wake up Render (retry until alive)
         run: |
-          curl -s --max-time 60 "${{ secrets.RENDER_APP_URL }}/health"
-          sleep 5
+          echo "喚醒 Render 伺服器..."
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "${{ secrets.RENDER_APP_URL }}/health" || echo "000")
+            echo "嘗試 $i：HTTP $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "伺服器已就緒"
+              break
+            fi
+            echo "等待 20 秒後重試..."
+            sleep 20
+          done
 
       - name: Generate daily report (after Taiwan close)
         run: |
           echo "台股收盤後生成分析報告..."
-          curl -s --max-time 120 \
+          curl -s --max-time 180 \
             -X POST \
             -H "x-api-key: ${{ secrets.REFRESH_API_KEY }}" \
             "${{ secrets.RENDER_APP_URL }}/api/cron/daily-report" | jq .
@@ -49,15 +70,24 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.schedule == '30 21 * * 1-5' || github.event_name == 'workflow_dispatch'
     steps:
-      - name: Wake up Render
+      - name: Wake up Render (retry until alive)
         run: |
-          curl -s --max-time 60 "${{ secrets.RENDER_APP_URL }}/health"
-          sleep 5
+          echo "喚醒 Render 伺服器..."
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "${{ secrets.RENDER_APP_URL }}/health" || echo "000")
+            echo "嘗試 $i：HTTP $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "伺服器已就緒"
+              break
+            fi
+            echo "等待 20 秒後重試..."
+            sleep 20
+          done
 
       - name: Refresh report (after US close)
         run: |
           echo "美股收盤後更新分析報告..."
-          curl -s --max-time 120 \
+          curl -s --max-time 180 \
             -X POST \
             -H "x-api-key: ${{ secrets.REFRESH_API_KEY }}" \
             "${{ secrets.RENDER_APP_URL }}/api/cron/daily-report" | jq .
